@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCX - Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0a0e1a;color:#fff;min-height:100vh}
+.container{max-width:450px;margin:0 auto;padding:20px}
+.card{background:#151a2c;border:1px solid #222;border-radius:16px;padding:20px;margin:15px 0}
+h1{text-align:center;color:#00ff88;font-size:36px;margin:15px 0}
+input{width:100%;padding:14px;border-radius:10px;border:1px solid #333;background:#0f1423;color:#fff;margin:8px 0;font-size:16px}
+.btn{width:100%;padding:14px;background:#00ff88;color:#000;border:none;border-radius:12px;font-weight:bold;font-size:16px;cursor:pointer;margin:8px 0}
+.btn:disabled{background:#333;color:#666}
+.balance{font-size:42px;font-weight:bold;text-align:center;color:#00ff88}
+.small{font-size:12px;opacity:0.5;text-align:center}
+.hidden{display:none}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>DCX</h1>
+
+<!-- LOGIN SECTION -->
+<div id="authSection" class="card">
+<h3>👤 Create Account</h3>
+<input id="userName" placeholder="Full Name">
+<input id="userEmail" type="email" placeholder="Email Address">
+<button class="btn" onclick="saveUser()">Start Earning DCX</button>
+<p class="small">Your name/email saves balance to your account</p>
+</div>
+
+<!-- DASHBOARD SECTION -->
+<div id="dashSection" class="hidden">
+<div class="topbar">
+<div>
+<div id="displayName" style="font-weight:bold"></div>
+<div id="displayEmail" style="font-size:12px;opacity:0.6"></div>
+</div>
+<button onclick="logout()" style="background:none;border:1px solid #333;color:#fff;padding:6px 12px;border-radius:8px">Logout</button>
+</div>
+
+<div class="card" style="background:linear-gradient(135deg,#00ff88,#00ccff);color:#000;text-align:center">
+<div style="opacity:0.7">TOTAL BALANCE</div>
+<div class="balance" id="balanceDisplay" style="color:#000">0</div>
+<div>DCX Tokens</div>
+<div id="usdValue" style="font-size:13px;margin-top:5px">$0.00</div>
+</div>
+
+<div class="card">
+<h3>💰 Watch Ads - Earn 50 DCX each</h3>
+<button class="btn" id="watchBtn1" onclick="watchAd(1)">Watch Ad 1 (+50 DCX)</button>
+<button class="btn" id="watchBtn2" onclick="watchAd(2)">Watch Ad 2 (+50 DCX)</button>
+<button class="btn" id="watchBtn3" onclick="watchAd(3)">Watch Ad 3 (+50 DCX)</button>
+<p class="small">Ad opens in new tab, wait 12s to get reward</p>
+</div>
+
+<div class="card">
+<h3>📜 History</h3>
+<div id="history" style="font-size:13px;opacity:0.8">No earnings yet</div>
+</div>
+</div>
+
+</div>
+
+<script>
+// ===== USER SYSTEM =====
+function saveUser(){
+  const name = document.getElementById('userName').value.trim();
+  const email = document.getElementById('userEmail').value.trim();
+  if(!name || !email){ alert('Enter name and email'); return; }
+  localStorage.setItem('dcx_name', name);
+  localStorage.setItem('dcx_email', email);
+  if(!localStorage.getItem('dcx_balance')) localStorage.setItem('dcx_balance','0');
+  showDashboard();
+}
+function logout(){
+  if(confirm('Logout? Balance will stay saved on this phone')) {
+    localStorage.removeItem('dcx_name');
+    localStorage.removeItem('dcx_email');
+    location.reload();
+  }
+}
+function showDashboard(){
+  const name = localStorage.getItem('dcx_name');
+  const email = localStorage.getItem('dcx_email');
+  if(name && email){
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('dashSection').classList.remove('hidden');
+    document.getElementById('displayName').innerText = name;
+    document.getElementById('displayEmail').innerText = email;
+    updateBalanceUI();
+    updateHistoryUI();
+  }
+}
+function updateBalanceUI(){
+  const bal = parseInt(localStorage.getItem('dcx_balance')||'0');
+  document.getElementById('balanceDisplay').innerText = bal;
+  document.getElementById('usdValue').innerText = "$" + (bal * 0.001).toFixed(3) + " USD";
+}
+function updateHistoryUI(){
+  const hist = JSON.parse(localStorage.getItem('dcx_history')||'[]');
+  const el = document.getElementById('history');
+  if(hist.length==0){ el.innerHTML="No earnings yet"; return; }
+  el.innerHTML = hist.slice(-10).reverse().map(h=>`+${h.amount} DCX - ${h.reason} - ${h.time}`).join('<br>');
+}
+function addReward(amount, reason){
+  let bal = parseInt(localStorage.getItem('dcx_balance')||'0');
+  bal += amount;
+  localStorage.setItem('dcx_balance', bal);
+  let hist = JSON.parse(localStorage.getItem('dcx_history')||'[]');
+  hist.push({amount, reason, time: new Date().toLocaleTimeString()});
+  localStorage.setItem('dcx_history', JSON.stringify(hist));
+  updateBalanceUI();
+  updateHistoryUI();
+}
+
+// LOAD ON START
+showDashboard();
+
+// ===== ADSTERRA SMARTLINK =====
+const ADSTERRA_SMARTLINK = "https://cowardrainbowactual.com/b2yvpx40r?key=41a4beca48aef540235ec8094d30edc2";
+function watchAd(num){
+  window.open(ADSTERRA_SMARTLINK, '_blank');
+  let btn = document.getElementById('watchBtn'+num);
+  let c=12;
+  btn.disabled=true;
+  btn.innerText=c+"s wait...";
+  let t=setInterval(()=>{
+    c--; btn.innerText=c+"s wait...";
+    if(c<=0){
+      clearInterval(t);
+      addReward(50, "Watch Ad "+num);
+      btn.innerText="Claimed +50 DCX ✓";
+      setTimeout(()=>{btn.innerText="Watch Ad "+num+" (+50 DCX)"; btn.disabled=false;},2500);
+    }
+  },1000);
+}
+</script>
+
+<!-- ADSTERRA ADS - PAYING -->
+<script src="https://cowardrainbowactual.com/fc/ed/85/fced858ef838a14b12551c52e3a659d3.js"></script>
+<script src="https://cowardrainbowactual.com/0a/18/37/0a1837fb9737e516baab2f090f80491c.js"></script>
+
+</body>
+</html>
