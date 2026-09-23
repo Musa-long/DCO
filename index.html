@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DCX Earn</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#070a14;color:#fff}
+.box{max-width:430px;margin:auto;padding:15px}
+.card{background:#12172a;border:1px solid #222;border-radius:16px;padding:18px;margin:12px 0}
+input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#0c1020;color:#fff}
+.btn{width:100%;padding:14px;background:#00ff88;color:#000;border:none;border-radius:12px;font-weight:bold;margin:6px 0;cursor:pointer}
+.btn:disabled{background:#222;color:#555}
+.bal{font-size:42px;color:#00ff88;text-align:center;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="box">
+<h1 style="text-align:center;color:#00ff88;margin:10px">DCX</h1>
+
+<div class="card">
+<b>👤 Profile (Same Page)</b>
+<input id="name" placeholder="Your Name" oninput="localStorage.setItem('dcx_name',this.value)">
+<input id="email" placeholder="Your Email" oninput="localStorage.setItem('dcx_email',this.value)">
+</div>
+
+<div class="card" style="text-align:center;background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000">
+<div style="font-size:12px">BALANCE</div>
+<div class="bal" id="bal" style="color:#000">0 DCX</div>
+<div id="daily">0 / 150 DCX Today (3 ads max = Adsterra limit)</div>
+<div style="background:rgba(0,0,0,0.2);height:8px;border-radius:10px;margin-top:8px"><div id="bar" style="height:8px;background:#000;width:0%"></div></div>
+</div>
+
+<div class="card">
+<b>💰 Watch Ads - Adsterra Pays You Per Click</b>
+<button class="btn" id="btn1" onclick="watchAd(1)">Watch Ad 1 (+50 DCX)</button>
+<button class="btn" id="btn2" onclick="watchAd(2)">Watch Ad 2 (+50 DCX)</button>
+<button class="btn" id="btn3" onclick="watchAd(3)">Watch Ad 3 (+50 DCX)</button>
+<p id="msg" style="font-size:11px;opacity:0.5;text-align:center;margin-top:6px">Adsterra counts 3 clicks/day per user. We match same limit so you profit.</p>
+</div>
+
+<div class="card">
+<b>📜 History</b>
+<div id="hist" style="font-size:12px;opacity:0.7">No earnings yet</div>
+</div>
+
+<div class="card" style="text-align:center">
+<b>🔗 Connect Wallet</b><br>
+<p style="font-size:12px;opacity:0.6;margin:8px">Withdraw DCX to crypto wallet</p>
+<button class="btn" style="background:#1a2340;color:#888;border:1px dashed #333" onclick="alert('Coming Soon! Min 1000 DCX')">Connect Wallet - Coming Soon</button>
+</div>
+
+</div>
+<script>
+function today(){return new Date().toDateString()}
+function getD(){if(localStorage.getItem('d_date')!==today()){localStorage.setItem('d_date',today());localStorage.setItem('d_daily','0');return 0}return parseInt(localStorage.getItem('d_daily')||'0')}
+function setD(v){localStorage.setItem('d_date',today());localStorage.setItem('d_daily',v)}
+function update(){
+let b=parseInt(localStorage.getItem('dcx_balance')||'0');
+document.getElementById('bal').innerText=b+' DCX';
+let d=getD();
+document.getElementById('daily').innerText=d+' / 150 DCX Today (3 ads max = Adsterra limit)';
+document.getElementById('bar').style.width=(d/150*100)+'%';
+let done=d>=150;
+[1,2,3].forEach(i=>document.getElementById('btn'+i).disabled=done);
+document.getElementById('msg').innerText=done?'Limit reached! Come back tomorrow. Adsterra pays 3 clicks/day':'Adsterra counts 3 clicks/day per user. We match same limit so you profit.';
+let h=JSON.parse(localStorage.getItem('dcx_h')||'[]');
+document.getElementById('hist').innerHTML=h.length?h.slice(-10).reverse().join('<br>'):'No earnings yet';
+document.getElementById('name').value=localStorage.getItem('dcx_name')||'';
+document.getElementById('email').value=localStorage.getItem('dcx_email')||'';
+}
+function add(a,r){let b=parseInt(localStorage.getItem('dcx_balance')||'0')+a;localStorage.setItem('dcx_balance',b);setD(getD()+a);let h=JSON.parse(localStorage.getItem('dcx_h')||'[]');h.push('+'+a+' DCX '+r+' '+new Date().toLocaleTimeString());localStorage.setItem('dcx_h',JSON.stringify(h));update()}
+const LINK="https://cowardrainbowactual.com/b2yvpx40r?key=41a4beca48aef540235ec8094d30edc2";
+function watchAd(n){if(getD()>=150){alert('Daily limit 150 DCX reached! Adsterra only pays 3 clicks/day');return}window.open(LINK,'_blank');let btn=document.getElementById('btn'+n),c=12;btn.disabled=true;let o=btn.innerText;btn.innerText=c+'s...';let t=setInterval(()=>{c--;btn.innerText=c+'s...';if(c<=0){clearInterval(t);add(50,'Ad'+n);btn.innerText='Claimed +50';setTimeout(()=>{btn.innerText=o;update()},1500)}},1000)}
+update();
+</script>
+<script src="https://cowardrainbowactual.com/fc/ed/85/fced858ef838a14b12551c52e3a659d3.js"></script>
+<script src="https://cowardrainbowactual.com/0a/18/37/0a1837fb9737e516baab2f090f80491c.js"></script>
+</body>
+</html>
