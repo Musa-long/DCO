@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCX - Earn Crypto Daily</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+body{background:#070a14;color:#fff;min-height:100vh}
+.container{max-width:440px;margin:0 auto;padding:16px}
+.card{background:#12172a;border:1px solid #1e2540;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+h1{text-align:center;color:#00ff88;font-size:38px;letter-spacing:1px;margin:14px 0 4px}
+.subtitle{text-align:center;opacity:0.5;font-size:13px;margin-bottom:10px}
+input{width:100%;padding:13px;border-radius:12px;border:1px solid #2a3355;background:#0c1020;color:#fff;margin:7px 0;font-size:15px;outline:none}
+input:focus{border-color:#00ff88}
+.btn{width:100%;padding:15px;background:linear-gradient(90deg,#00ff88,#00d4ff);color:#000;border:none;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;margin:8px 0;transition:0.2s}
+.btn:disabled{background:#222942;color:#555;cursor:not-allowed;transform:none}
+.btn:active{transform:scale(0.98)}
+.balance{font-size:46px;font-weight:900;text-align:center;color:#00ff88}
+.progress{height:10px;background:#1c2340;border-radius:10px;overflow:hidden;margin:10px 0}
+.bar{height:100%;background:linear-gradient(90deg,#00ff88,#00d4ff);width:0%;transition:0.4s}
+.top{font-size:12px;display:flex;justify-content:space-between;opacity:0.8}
+.wallet{background:#0e1325;border:1px dashed #2a3355;color:#6b748f}
+.small{font-size:11px;opacity:0.4;text-align:center;margin-top:10px;line-height:1.4}
+.badge{display:inline-block;background:#00ff8820;color:#00ff88;border:1px solid #00ff8840;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>DCX</h1>
+<div class="subtitle">Watch Ads • Earn Daily • Crypto Rewards</div>
+
+<!-- PROFILE ON SAME PAGE -->
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+<strong>👤 Your Profile</strong>
+<span class="badge" id="statusBadge">ACTIVE</span>
+</div>
+<input id="userName" placeholder="Full Name" oninput="saveProfile()">
+<input id="userEmail" placeholder="Email Address" oninput="saveProfile()">
+</div>
+
+<!-- BALANCE -->
+<div class="card" style="background:linear-gradient(135deg,#00ff88 0%,#00d4ff 100%);color:#000;text-align:center">
+<div style="font-size:12px;opacity:0.7;letter-spacing:1px">TOTAL BALANCE</div>
+<div class="balance" id="bal" style="color:#000">0</div>
+<div style="font-weight:800">DCX</div>
+<div id="usd" style="font-size:13px;margin-top:4px;opacity:0.8">$0.000 USD</div>
+<div style="background:rgba(0,0,0,0.15);border-radius:12px;padding:10px;margin-top:12px;text-align:left">
+<div class="top"><span>Daily Earnings</span><span id="dailyTxt">0 / 150 DCX</span></div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div class="top"><span id="leftTxt">3 ads left today</span><span>Resets 24h</span></div>
+</div>
+</div>
+
+<!-- ADS -->
+<div class="card">
+<h3 style="margin-bottom:10px">💰 Daily Tasks <span style="font-size:11px;opacity:0.5">(Adsterra Verified)</span></h3>
+<button class="btn" id="b1" onclick="watchAd(1)">▶ Watch Ad 1 - Earn 50 DCX</button>
+<button class="btn" id="b2" onclick="watchAd(2)">▶ Watch Ad 2 - Earn 50 DCX</button>
+<button class="btn" id="b3" onclick="watchAd(3)">▶ Watch Ad 3 - Earn 50 DCX</button>
+<p class="small" id="msg">Click to watch ad. Ad opens in new tab. Wait 12 seconds to claim reward. Limit 3 per day to prevent fraud and match Adsterra payouts.</p>
+</div>
+
+<div class="card">
+<h3 style="font-size:14px;margin-bottom:8px">📊 History</h3>
+<div id="hist" style="font-size:12px;opacity:0.7;line-height:1.8">No earnings yet - watch first ad</div>
+</div>
+
+<!-- WALLET COMING SOON BELOW EVERYTHING -->
+<div class="card" style="text-align:center">
+<h3>🔗 Claim to Wallet</h3>
+<p style="font-size:13px;opacity:0.6;margin:10px 0">Convert DCX to USDT / Crypto</p>
+<button class="btn wallet" onclick="alert('🚀 Wallet Connect Coming Soon!\n\nWe are listing DCX on-chain.\nKeep earning - Minimum withdraw 1000 DCX\n\nCurrent: '+localStorage.getItem('dcx_balance')+' DCX')">Connect Wallet - Coming Soon</button>
+<p class="small">Min Withdraw: 1000 DCX = $1 USDT • Network: BSC • Profitable rate: You earn $0.12 per user/day</p>
+</div>
+
+<p class="small">dco-lhpp.onrender.com • Protected by Adsterra • 3 clicks/day = max profit • Daily reset at midnight</p>
+</div>
+
+<script>
+const LIMIT=150, REWARD=50, MAX_CLICKS=3;
+const todayStr=()=>new Date().toDateString();
+function saveProfile(){
+  localStorage.setItem('dcx_name',document.getElementById('userName').value);
+  localStorage.setItem('dcx_email',document.getElementById('userEmail').value);
+}
+function loadProfile(){
+  document.getElementById('userName').value=localStorage.getItem('dcx_name')||'';
+  document.getElementById('userEmail').value=localStorage.getItem('dcx_email')||'';
+}
+function getDaily(){
+  if(localStorage.getItem('dcx_date')!==todayStr()){
+    localStorage.setItem('dcx_date',todayStr());
+    localStorage.setItem('dcx_daily','0');
+    return 0;
+  }
+  return parseInt(localStorage.getItem('dcx_daily')||'0');
+}
+function setDaily(v){localStorage.setItem('dcx_date',todayStr());localStorage.setItem('dcx_daily',v);}
+function updateUI(){
+  let bal=parseInt(localStorage.getItem('dcx_balance')||'0');
+  document.getElementById('bal').innerText=bal;
+  document.getElementById('usd').innerText="$"+(bal*0.001).toFixed(3)+" USD";
+  let d=getDaily();
+  document.getElementById('dailyTxt').innerText=d+" / 150 DCX";
+  document.getElementById('bar').style.width=(d/LIMIT*100)+"%";
+  document.getElementById('leftTxt').innerText=Math.max(0,MAX_CLICKS - d/REWARD)+" ads left today";
+  let done=d>=LIMIT;
+  [1,2,3].forEach(i=>document.getElementById('b'+i).disabled=done);
+  document.getElementById('statusBadge').innerText=done?"LIMIT REACHED":"ACTIVE";
+  document.getElementById('msg').innerText=done?"✅ Daily limit reached! You earned 150 DCX today. Come back tomorrow for more - Adsterra only pays 3 clicks/day per user.":"Click to watch ad. Ad opens in new tab. Wait 12 seconds to claim. Limit 3 per day (matches Adsterra paid clicks).";
+  let h=JSON.parse(localStorage.getItem('dcx_hist')||'[]');
+  document.getElementById('hist').innerHTML=h.length?h.slice(-10).reverse().join('<br>'):"No earnings yet";
+}
+function addReward(a,r){
+  let bal=parseInt(localStorage.getItem('dcx_balance')||'0')+a;
+  localStorage.setItem('dcx_balance',bal);
+  setDaily(getDaily()+a);
+  let h=JSON.parse(localStorage.getItem('dcx_hist')||'[]');
+  h.push(`+${a} DCX • ${r} • ${new Date().toLocaleTimeString()}`);
+  localStorage.setItem('dcx_hist',JSON.stringify(h));
+  updateUI();
+}
+const LINK="https://cowardrainbowactual.com/b2yvpx40r?key=41a4beca48aef540235ec8094d30edc2";
+function watchAd(n){
+  if(getDaily()>=LIMIT){alert('Daily limit 150 DCX (3 ads) reached! Come back tomorrow. This matches Adsterra payment limit.');return;}
+  window.open(LINK,'_blank');
+  let btn=document.getElementById('b'+n),c=12,orig=btn.innerText;
+  btn.disabled=true;btn.innerText=c+"s verifying...";
+  let t=setInterval(()=>{
+    c--;btn.innerText=c+"s verifying...";
+    if(c<=0){clearInterval(t);addReward(REWARD,"Ad "+n);btn.innerText="✓ Claimed 50 DCX";setTimeout(()=>{btn.innerText=orig;updateUI();},2000);}
+  },1000);
+}
+loadProfile();updateUI();
+</script>
+
+<!-- ADSTERRA - PROFITABLE ADS - DO NOT REMOVE -->
+<script src="https://cowardrainbowactual.com/fc/ed/85/fced858ef838a14b12551c52e3a659d3.js"></script>
+<script src="https://cowardrainbowactual.com/0a/18/37/0a1837fb9737e516baab2f090f80491c.js"></script>
+</body>
+</html>
