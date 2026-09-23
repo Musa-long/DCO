@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DailyCrypto - Earn 500 DCX Daily</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial}
+body{background:#080b0f;color:white;min-height:100vh;padding:16px}
+.container{max-width:420px;margin:auto}
+.logo{font-size:42px;font-weight:900;text-align:center;margin:25px 0 5px;background:linear-gradient(90deg,#00ff9d,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{color:#8a8f98;text-align:center;margin-bottom:22px;font-size:14px}
+.card{background:linear-gradient(145deg,#11151c,#0e131a);border:1px solid #1c242f;border-radius:18px;padding:20px;margin-bottom:16px}
+.balance-label{color:#8a8f98;text-align:center;font-size:13px;margin-bottom:8px}
+.balance{color:#00ff88;font-size:48px;font-weight:900;text-align:center}
+.stats{display:flex;justify-content:space-between;margin-top:12px;color:#5a6270;font-size:13px}
+.stats b{color:white}
+.claim-card{border:1px solid #00ff88;background:radial-gradient(circle at top,#102a1f,#0e131a)}
+.claim-title{font-size:18px;font-weight:700;text-align:center}
+.claim-sub{font-size:12px;color:#8a8f98;text-align:center;margin:6px 0 16px}
+.ad-row{display:flex;gap:10px;margin-bottom:12px}
+.ad-btn{flex:1;background:#1a232f;border:1px solid #2a3545;color:white;padding:14px;border-radius:12px;font-weight:600;cursor:pointer;font-size:13px}
+.ad-btn.watched{background:#00ff88;color:#002211;border-color:#00ff88}
+.partner-box{background:#0c1017;border:1px solid #1e2936;border-radius:14px;padding:14px;margin:14px 0 16px}
+.partner-head{font-size:11px;letter-spacing:2px;color:#3a4453;text-align:center;margin-bottom:10px}
+.partners{display:flex;justify-content:space-around;align-items:center;opacity:0.8;margin-bottom:6px}
+.partners div{font-weight:800;font-size:12px;color:#5a677a;background:#121820;padding:6px 10px;border-radius:6px;border:1px solid #1e2936}
+.input{width:100%;background:#0f1520;border:1px solid #1e2936;color:white;padding:13px 14px;border-radius:10px;margin-bottom:10px;outline:none;font-size:14px}
+.input:focus{border-color:#00ff88}
+.check-row{display:flex;gap:10px;align-items:flex-start;margin:10px 0 14px;font-size:12px;color:#8a94a6;line-height:1.4}
+.check-row input{width:18px;height:18px;accent-color:#00ff88;margin-top:2px;cursor:pointer}
+#claimBtn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;transition:0.3s}
+#claimBtn:disabled{background:#1a232f;color:#4a5568}
+#claimBtn.active{background:linear-gradient(90deg,#00ff88,#00d4ff);color:#00120a;box-shadow:0 0 20px rgba(0,255,136,0.4)}
+.wallet-btn{width:100%;background:transparent;border:1.5px solid #00ff88;color:#00ff88;padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px}
+.ads-box{background:#0c1017;border:1px dashed #1e2936;border-radius:14px;min-height:90px;display:flex;align-items:center;justify-content:center;color:#2d3748;font-size:11px;letter-spacing:2px;overflow:hidden;flex-direction:column}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:white;color:black;padding:12px 20px;border-radius:30px;font-weight:700;font-size:13px;display:none;z-index:99}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="logo">DailyCrypto</div>
+<div class="sub">Watch Ads. Earn 500 DCX. Withdraw Monthly.</div>
+
+<div class="card">
+<div class="balance-label">Your Balance</div>
+<div class="balance"><span id="bal">0</span> DCX</div>
+<div class="stats"><span>Days: <b id="days">0/30</b></span><span id="usd">≈ $0.00</span></div>
+</div>
+
+<div class="card claim-card">
+<div class="claim-title">Daily Reward: 500 DCX</div>
+<div class="claim-sub" id="claimSub">Watch 2 ads to unlock today's claim</div>
+
+<div class="ad-row">
+<button class="ad-btn" id="ad1Btn" onclick="watchAd(1)">▶️ Watch Ad 1</button>
+<button class="ad-btn" id="ad2Btn" onclick="watchAd(2)">▶️ Watch Ad 2</button>
+</div>
+
+<!-- PARTNER + EMAIL SECTION -->
+<div class="partner-box">
+<div class="partner-head">OUR TRUSTED PARTNERS</div>
+<div class="partners">
+<div>BINANCE</div><div>Coinbase</div><div>Trust Wallet</div>
+</div>
+
+<!-- Monetag Ad Space Inside -->
+<div class="ads-box" style="margin:12px 0;min-height:120px">
+SPONSORED
+<!-- PASTE MONETAG BANNER CODE HERE -->
+</div>
+
+<input class="input" id="nameInp" placeholder="Enter your name" oninput="checkUnlock()">
+<input class="input" id="emailInp" placeholder="Enter your email" type="email" oninput="checkUnlock()">
+
+<div class="check-row">
+<input type="checkbox" id="tick" onchange="checkUnlock()">
+<label for="tick">I agree that I watched ads and want to claim my 500 DCX. I will receive updates on email.</label>
+</div>
+</div>
+
+<button id="claimBtn" disabled onclick="claim()">🔒 Complete All Steps to Claim</button>
+<div style="font-size:11px;color:#6b7280;text-align:center;margin-top:8px" id="timer"></div>
+</div>
+
+<div class="ads-box" style="min-height:250px">
+SPONSORED - SECOND AD SPACE
+<!-- PASTE SECOND MONETAG CODE HERE -->
+</div>
+
+<button class="wallet-btn" onclick="comingSoon()">Connect Wallet</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let balance = parseInt(localStorage.getItem('dcx_bal') || '0');
+let daysCount = parseInt(localStorage.getItem('dcx_days') || '0');
+let lastClaim = localStorage.getItem('dcx_last') || '';
+let ad1=false, ad2=false;
+
+function init(){
+ document.getElementById('bal').innerText=balance;
+ document.getElementById('days').innerText=daysCount+'/30';
+ document.getElementById('usd').innerText='≈ $'+(balance*0.002).toFixed(2);
+ let today=new Date().toDateString();
+ if(lastClaim===today){
+   document.getElementById('claimSub').innerText='✅ Already claimed today!';
+   document.getElementById('claimBtn').innerText='✅ Claimed Today';
+ }
+}
+function watchAd(n){
+ showToast('Ad '+n+' playing... please wait');
+ setTimeout(()=>{
+  if(n===1){ad1=true;document.getElementById('ad1Btn').classList.add('watched');document.getElementById('ad1Btn').innerText='✅ Ad 1 Watched';}
+  else{ad2=true;document.getElementById('ad2Btn').classList.add('watched');document.getElementById('ad2Btn').innerText='✅ Ad 2 Watched';}
+  checkUnlock();showToast('Ad '+n+' completed ✅');
+ },2500);
+ // window.open('YOUR_MONETAG_DIRECT_LINK','_blank');
+}
+function checkUnlock(){
+ let name=document.getElementById('nameInp').value.trim();
+ let email=document.getElementById('emailInp').value.trim();
+ let tick=document.getElementById('tick').checked;
+ let today=new Date().toDateString();
+ if(lastClaim===today) return;
+ let emailOk=email.includes('@')&&email.includes('.');
+ if(ad1&&ad2&&name.length>2&&emailOk&&tick){
+  let btn=document.getElementById('claimBtn');
+  btn.disabled=false;btn.classList.add('active');btn.innerText='⚡ Claim 500 DCX Now';
+  document.getElementById('claimSub').innerText='All set! Claim now';
+ } else {
+  let btn=document.getElementById('claimBtn');
+  btn.disabled=true;btn.classList.remove('active');btn.innerText='🔒 Complete All Steps to Claim';
+ }
+}
+function claim(){
+ let today=new Date().toDateString();
+ if(localStorage.getItem('dcx_last')===today){showToast('Already claimed today!');return;}
+ balance+=500;daysCount++;lastClaim=today;
+ localStorage.setItem('dcx_bal',balance);localStorage.setItem('dcx_days',daysCount);localStorage.setItem('dcx_last',today);
+ // Save name/email
+ localStorage.setItem('dcx_name',document.getElementById('nameInp').value);
+ localStorage.setItem('dcx_email',document.getElementById('emailInp').value);
+ document.getElementById('bal').innerText=balance;
+ document.getElementById('days').innerText=daysCount+'/30';
+ showToast('🎉 500 DCX Claimed!');
+ document.getElementById('claimBtn').innerText='✅ Claimed Today';
+ document.getElementById('claimBtn').disabled=true;
+}
+function comingSoon(){showToast('🔜 Connect Wallet - Coming Soon!');}
+function showToast(m){let t=document.getElementById('toast');t.innerText=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
+init();
+</script>
+</body>
+</html>
